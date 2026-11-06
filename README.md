@@ -2,7 +2,7 @@
 
 Nền tảng đọc truyện trực tuyến dành cho độc giả Việt Nam, nơi người đọc khám phá và theo dõi tác phẩm, tương tác quanh nội dung đọc; creator có thể gửi tác phẩm có quyền sử dụng phù hợp để được xem xét phát hành theo quy trình minh bạch.
 
-> **Trạng thái hiện tại:** repository đang ở giai đoạn Product Foundation (E00). Chưa có ứng dụng chạy được, chưa có `package.json`, database hoặc môi trường triển khai. Không chạy lệnh cài đặt/build ứng dụng cho đến khi E01 xác nhận stack và khởi tạo project.
+> **Trạng thái hiện tại:** E01-01 đã hoàn tất phần khởi tạo Next.js + TypeScript và kiểm chứng cục bộ (dev, lint, typecheck, build). Chưa có database, authentication, CI hoặc tính năng đọc truyện. Thay đổi đang chờ review/commit.
 
 ## Định hướng sản phẩm
 
@@ -20,29 +20,55 @@ Các quyết định sản phẩm, kiến trúc và backlog chuẩn được qu�
 | Epic | Nội dung | Trạng thái |
 | --- | --- | --- |
 | E00 | Product Foundation | Đang thực hiện |
-| E01 | Project Infrastructure | Chưa bắt đầu |
+| E01 | Project Infrastructure | Đang thực hiện — E01-01 đã kiểm chứng, chờ review |
 | E02–E11 | Auth, catalog, rights, reader, community và launch readiness | Backlog |
 
 Không coi việc tạo issue hoặc tài liệu nháp là hoàn thành epic. Chỉ đánh dấu hoàn thành khi acceptance criteria có bằng chứng và được review.
 
-## Repository hiện tại
+## Stack hiện tại
 
-Các tài liệu chính:
+| Thành phần | Phiên bản |
+| --- | --- |
+| Next.js (App Router, Turbopack) | `16.4.5` |
+| React / React DOM | `19.3.0` |
+| TypeScript | `5.9.3` |
+| ESLint + `eslint-config-next` | `9.39.5` / `16.4.5` |
+| Node.js tối thiểu | `>=20.9.0` |
+| Package manager | `npm@11.16.0` |
 
-- `README.md`: tổng quan dự án và trạng thái repository.
-- `CONTRIBUTING.md`: quy trình cộng tác, branch, commit và pull request.
-- `.github/PULL_REQUEST_TEMPLATE.md`: checklist khi mở pull request.
-- `.gitignore`: loại trừ file môi trường, secrets và artifacts phổ biến.
+Dependency được khóa bằng `package-lock.json`. Không thêm Tailwind, database,
+authentication, test framework hoặc CI trong E01-01.
 
-Cấu trúc tài liệu sản phẩm/kỹ thuật sẽ được bổ sung theo từng task E00; không tạo sẵn source tree hoặc cấu hình app trước E01.
+## Cấu trúc repository
+
+```text
+.
+├── .github/                  # Pull request template
+├── src/
+│   ├── app/                  # Next.js App Router
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   └── modules/              # Ranh giới module nghiệp vụ (modular monolith)
+├── AGENTS.md                 # Hướng dẫn do Next.js sinh tự động
+├── CONTRIBUTING.md
+├── README.md
+├── eslint.config.mjs
+├── next.config.ts
+├── package.json
+├── package-lock.json
+└── tsconfig.json
+```
+
+Chưa có database, Prisma, authentication, API nghiệp vụ hoặc dữ liệu truyện.
 
 ## Bắt đầu đóng góp
 
 ### Yêu cầu hiện tại
 
 - Git.
+- Node.js `>=20.9.0` (đã kiểm chứng với `v24.18.0`).
+- npm `11.16.0`.
 - Tài khoản GitHub có quyền truy cập repository.
-- Không cần cài Node.js/package manager ở giai đoạn E00 vì repository chưa có ứng dụng.
 
 ### Clone repository
 
@@ -53,7 +79,28 @@ cd NWH
 
 ### Thiết lập môi trường ứng dụng
 
-Chưa áp dụng. E01-01 sẽ xác nhận phiên bản runtime/package manager và bổ sung lệnh cài đặt, chạy dev, lint, typecheck, test và build sau khi stack được duyệt. Không tự suy đoán phiên bản hoặc tạo lockfile trong E00.
+```bash
+npm install
+npm run dev
+```
+
+Development server mặc định chạy tại <http://localhost:3000>.
+
+### Kiểm tra chất lượng
+
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
+
+Chạy bản production đã build:
+
+```bash
+npm run start
+```
+
+Chưa có lệnh test vì Vitest/Playwright thuộc E01-06.
 
 ## Quy tắc quan trọng
 

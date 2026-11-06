@@ -9,7 +9,7 @@ Tài liệu này quy định cách cộng tác trên repository Nova Wave Hub. K
 3. Không tự mở rộng scope sang epic/task khác.
 4. Nếu yêu cầu mơ hồ hoặc mâu thuẫn với Project Skill, hỏi Product Owner trước khi thay đổi.
 
-Ở giai đoạn E00, repository chưa có application code. Không cài package, tạo database schema hoặc thêm cấu hình CI thuộc E01.
+E01-01 đã khởi tạo Next.js + TypeScript. Chỉ cài package hoặc thay đổi cấu hình khi task tương ứng cho phép; không tự thêm database, authentication, test framework hoặc CI ngoài scope.
 
 ## 2. Branch convention
 
@@ -72,7 +72,15 @@ Chính sách mong muốn (cần cấu hình trong GitHub Settings → Branches h
 
 ## 6. Checks và chất lượng
 
-Hiện chưa có app hoặc CI nên chưa có lệnh kiểm thử ứng dụng. Khi E01 thiết lập tooling, PR phải chạy checks đã được cấu hình và README phải ghi đúng lệnh/phiên bản thực tế.
+E01-01 đã thiết lập Next.js `16.4.5`, TypeScript và ESLint. Trước khi gửi PR, chạy:
+
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
+
+Chưa có test framework (E01-06) và CI (E01-07); không tuyên bố các check đó đã tồn tại. Khi CI được thiết lập, PR phải chạy đúng các status check đã cấu hình.
 
 Trước khi gửi PR:
 
