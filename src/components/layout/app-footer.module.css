@@ -1,0 +1,74 @@
+.footer {
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-7);
+  justify-content: space-between;
+  padding-block: var(--space-8);
+}
+
+.brandBlock {
+  max-width: 32rem;
+}
+
+.brand {
+  margin-bottom: var(--space-2);
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  justify-content: space-between;
+  padding-block: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.legal p {
+  margin: 0;
+}
+
+/* Mobile: footer stacks vertically (E00-04 §3.1). */
+@media (max-width: 639px) {
+  .inner {
+    flex-direction: column;
+    gap: var(--space-5);
+    padding-block: var(--space-7);
+  }
+}

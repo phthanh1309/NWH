@@ -1,0 +1,135 @@
+/**
+ * NWH design tokens (E01-02)
+ * ------------------------------------------------------------------
+ * Single source of truth for color, typography, spacing, radius,
+ * shadow, layout and focus tokens. Components should consume these
+ * variables instead of hard-coded values.
+ *
+ * Palette is intentionally neutral/provisional: E00-04 is a structural
+ * wireframe and no approved visual identity exists yet. Replace the
+ * primitive values here (not in components) when brand design lands.
+ *
+ * Breakpoints (must stay in sync with media queries; CSS custom
+ * properties cannot be used inside @media):
+ *   mobile   < 640px
+ *   tablet   640px – 1023px
+ *   desktop  >= 1024px
+ *   wide     >= 1280px
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ---------------------------------------------------------------
+   * Color — surfaces
+   * --------------------------------------------------------------- */
+  --color-bg: #ffffff;
+  --color-surface: #f6f7f9;
+  --color-surface-muted: #eef0f4;
+  --color-surface-raised: #ffffff;
+
+  /* Color — text */
+  --color-text: #16181d;
+  --color-text-muted: #565f6d;
+  --color-text-inverse: #ffffff;
+
+  /* Color — borders */
+  --color-border: #d5d9e0;
+  --color-border-strong: #a9b1be;
+
+  /* Color — primary / interactive */
+  --color-primary: #1a5fb4;
+  --color-primary-hover: #14498c;
+  --color-primary-active: #0f3a70;
+  --color-primary-soft: #e7effa;
+  --color-on-primary: #ffffff;
+
+  /* Color — semantic states */
+  --color-success: #17663a;
+  --color-success-soft: #e6f4ec;
+  --color-warning: #8a4b00;
+  --color-warning-soft: #fdf1de;
+  --color-danger: #b3261e;
+  --color-danger-soft: #fbe9e7;
+  --color-info: #1a5fb4;
+  --color-info-soft: #e7effa;
+
+  /* Color — focus */
+  --color-focus-ring: #0f4a94;
+
+  /* ---------------------------------------------------------------
+   * Typography
+   * --------------------------------------------------------------- */
+  --font-sans:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: clamp(2rem, 1.4rem + 2.4vw, 2.75rem);
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.35;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.7;
+
+  --letter-spacing-tight: -0.01em;
+
+  /* ---------------------------------------------------------------
+   * Spacing scale (4px base)
+   * --------------------------------------------------------------- */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-7: 2rem; /* 32px */
+  --space-8: 2.5rem; /* 40px */
+  --space-9: 3rem; /* 48px */
+  --space-10: 4rem; /* 64px */
+  --space-11: 5rem; /* 80px */
+  --space-12: 6rem; /* 96px */
+
+  /* ---------------------------------------------------------------
+   * Radius
+   * --------------------------------------------------------------- */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  /* ---------------------------------------------------------------
+   * Shadow
+   * --------------------------------------------------------------- */
+  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.06);
+  --shadow-md: 0 4px 12px rgb(16 24 40 / 0.08);
+  --shadow-lg: 0 12px 32px -8px rgb(16 24 40 / 0.18);
+
+  /* ---------------------------------------------------------------
+   * Layout
+   * --------------------------------------------------------------- */
+  --container-max: 75rem; /* 1200px content width */
+  --container-narrow: 42rem; /* long-form / reading width */
+  --container-form: 26rem; /* auth form width */
+  --page-gutter: clamp(1rem, 4vw, 2.5rem);
+  --layout-header-height: 4rem;
+  --layout-bottom-nav-height: 3.75rem;
+
+  /* ---------------------------------------------------------------
+   * Focus ring
+   * --------------------------------------------------------------- */
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+}

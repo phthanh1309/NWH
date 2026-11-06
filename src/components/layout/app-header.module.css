@@ -1,0 +1,132 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface-raised);
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: var(--layout-header-height);
+  padding-block: var(--space-2);
+}
+
+.brand {
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand:hover {
+  color: var(--color-primary);
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  justify-self: center;
+  width: 100%;
+  max-width: 32rem;
+  padding: var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+}
+
+/* The wrapper shows focus because the input's own ring is removed. */
+.search:focus-within {
+  border-color: var(--color-primary);
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.searchInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-full);
+  background-color: transparent;
+}
+
+.searchInput:focus-visible {
+  outline: none;
+}
+
+.searchButton {
+  flex: 0 0 auto;
+  min-height: 2.25rem;
+  padding-inline: var(--space-4);
+  border: 0;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.searchButton:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.searchButton:active {
+  background-color: var(--color-primary-active);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.account {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-inline: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.account:hover {
+  border-color: var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+/* Tablet: inline navigation no longer fits; the bottom bar carries it. */
+@media (max-width: 1023px) {
+  .primaryNav {
+    display: none;
+  }
+}
+
+/* Mobile: one compact row for logo, search on its own row below. */
+@media (max-width: 639px) {
+  .inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+    padding-block: var(--space-3);
+  }
+
+  .search {
+    max-width: none;
+  }
+
+  .actions {
+    display: none;
+  }
+}
