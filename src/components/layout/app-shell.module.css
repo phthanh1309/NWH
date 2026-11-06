@@ -1,0 +1,23 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.main {
+  flex: 1 0 auto;
+  padding-block: var(--space-7) var(--space-10);
+}
+
+/* Programmatic focus target for the skip link: no ring on the whole
+   page, the skip link itself communicates the action. */
+.main:focus {
+  outline: none;
+}
+
+/* Reserve space for the fixed bottom navigation on mobile/tablet. */
+@media (max-width: 1023px) {
+  .main {
+    padding-bottom: calc(var(--space-10) + var(--layout-bottom-nav-height));
+  }
+}
