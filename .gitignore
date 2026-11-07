@@ -33,6 +33,9 @@ playwright/.cache/
 # TypeScript build metadata
 *.tsbuildinfo
 
+# Prisma generated client (run `npm run db:generate`)
+src/generated/prisma/
+
 # Logs and runtime artifacts
 *.log
 npm-debug.log*

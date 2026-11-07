@@ -1,0 +1,3 @@
+-- Baseline migration for Nova Wave Hub.
+-- E01-04 establishes Prisma Migrate without adding business tables.
+-- The first application tables are added by E02/E03 scope.
