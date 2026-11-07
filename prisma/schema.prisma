@@ -1,0 +1,13 @@
+// Prisma schema for Nova Wave Hub.
+// Business models are added per epic (E02+); E01-04 only establishes the
+// datasource and client generator. The connection URL lives in
+// prisma7.config.ts so the Prisma CLI always uses Neon's direct connection.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
