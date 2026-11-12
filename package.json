@@ -20,16 +20,22 @@
     "db:migrate:deploy": "prisma migrate deploy"
   },
   "dependencies": {
+    "@neon/config": "^1.11.3",
+    "@neon/env": "^1.6.15",
+    "@neondatabase/serverless": "^1.2.0",
     "@prisma/adapter-neon": "7.10.1",
     "@prisma/client": "7.10.1",
     "next": "16.4.5",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "server-only": "0.0.1",
+    "ws": "8.22.2"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/ws": "8.18.2",
     "dotenv": "18.0.9",
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
