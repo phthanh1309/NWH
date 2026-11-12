@@ -2,7 +2,7 @@
 
 Nền tảng đọc truyện trực tuyến dành cho độc giả Việt Nam, nơi người đọc khám phá và theo dõi tác phẩm, tương tác quanh nội dung đọc; creator có thể gửi tác phẩm có quyền sử dụng phù hợp để được xem xét phát hành theo quy trình minh bạch.
 
-> **Trạng thái hiện tại:** E01-01 đã hoàn tất phần khởi tạo Next.js + TypeScript; E01-02 đã thiết lập design tokens, typography, spacing và responsive application shell theo wireframe E00-04; E01-03 đã thiết lập Neon PostgreSQL cho dev/staging ở mức cấu hình môi trường; E01-04 đã khóa Prisma ORM `7.10.1`, cấu hình Prisma Client generator và Prisma Migrate dùng direct connection, đồng thời áp dụng baseline migration trên Neon branch `dev`. Chưa có authentication, CI, DB client ứng dụng hoặc tính năng đọc truyện. Thay đổi đang chờ review/commit.
+> **Trạng thái hiện tại:** E01-01 đã hoàn tất phần khởi tạo Next.js + TypeScript; E01-02 đã thiết lập design tokens, typography, spacing và responsive application shell theo wireframe E00-04; E01-03 đã thiết lập Neon PostgreSQL cho dev/staging ở mức cấu hình môi trường; E01-04 đã khóa Prisma ORM `7.10.1`, cấu hình Prisma Client generator và Prisma Migrate dùng direct connection, đồng thời áp dụng baseline migration trên Neon branch `dev`; E01-05 đã thêm Prisma DB client dùng chung, env validation server-side và endpoint `/api/health`. Chưa có authentication, CI hoặc tính năng đọc truyện. Thay đổi đang chờ review/commit.
 
 ## Định hướng sản phẩm
 
@@ -20,7 +20,7 @@ Các quyết định sản phẩm, kiến trúc và backlog chuẩn được qu�
 | Epic | Nội dung | Trạng thái |
 | --- | --- | --- |
 | E00 | Product Foundation | Đang thực hiện |
-| E01 | Project Infrastructure | Đang thực hiện — E01-01, E01-02, E01-03 đã kiểm chứng; E01-04 chờ review |
+| E01 | Project Infrastructure | Đang thực hiện — E01-01, E01-02, E01-03 đã kiểm chứng; E01-04, E01-05 chờ review |
 | E02–E11 | Auth, catalog, rights, reader, community và launch readiness | Backlog |
 
 Không coi việc tạo issue hoặc tài liệu nháp là hoàn thành epic. Chỉ đánh dấu hoàn thành khi acceptance criteria có bằng chứng và được review.
@@ -35,6 +35,7 @@ Không coi việc tạo issue hoặc tài liệu nháp là hoàn thành epic. Ch
 | ESLint + `eslint-config-next` | `9.39.5` / `16.4.5` |
 | PostgreSQL (dev/staging) | Neon, branches `dev` và `staging`, region `aws-ap-southeast-1` |
 | Prisma ORM (CLI / Client / Neon adapter) | `7.10.1` (pin chính xác) |
+| DB client runtime deps | `server-only@0.0.1`, `ws@8.22.2` (WebSocket cho Node.js 20) |
 | Node.js tối thiểu | `>=20.9.0` |
 | Package manager | `npm@11.16.0` |
 
@@ -43,8 +44,8 @@ test framework hoặc CI trong E01-01. E01-02 dùng CSS thuần: global CSS cho 
 styles và CSS Modules cho component, không thêm UI framework hay dependency mới.
 E01-03 chỉ cấu hình biến môi trường và tài liệu kết nối Neon PostgreSQL. E01-04
 thêm Prisma ORM `7.10.1`, schema khung, Prisma Client generator và baseline
-migration; **chưa** tạo DB client cho ứng dụng, env validation hoặc health
-endpoint — các phần đó thuộc E01-05.
+migration. E01-05 thêm Prisma DB client dùng chung, env validation server-side
+và endpoint `/api/health`; không thêm model nghiệp vụ.
 
 ## Cấu trúc repository
 
@@ -53,11 +54,15 @@ endpoint — các phần đó thuộc E01-05.
 ├── .github/                  # Pull request template
 ├── src/
 │   ├── app/                  # Next.js App Router
+│   │   ├── api/health/       # GET /api/health (DB liveness probe)
 │   │   ├── globals.css       # Reset + base styles
 │   │   ├── layout.tsx        # Root layout, bọc AppShell
 │   │   └── page.tsx          # Homepage placeholder
 │   ├── components/
 │   │   └── layout/           # AppShell, AppHeader, AppFooter, BottomNav, NavLinks
+│   ├── lib/
+│   │   ├── db.ts             # Prisma Client dùng chung + checkDatabaseHealth()
+│   │   └── env.ts            # Env validation server-side
 │   ├── modules/              # Ranh giới module nghiệp vụ (modular monolith)
 │   ├── generated/prisma/     # Prisma Client generated (không commit)
 │   └── styles/
@@ -80,7 +85,8 @@ endpoint — các phần đó thuộc E01-05.
 
 Chưa có model nghiệp vụ hoặc dữ liệu truyện. Kết nối PostgreSQL dev/staging được
 cấu hình qua biến môi trường (E01-03); Prisma schema và migration được thiết lập
-ở E01-04. DB client ứng dụng, authentication và API nghiệp vụ thuộc các epic sau.
+ở E01-04; Prisma Client dùng chung, env validation và health endpoint được thêm ở
+E01-05. Authentication và API nghiệp vụ thuộc các epic sau.
 
 ## Design system và layout (E01-02)
 
@@ -116,12 +122,13 @@ placeholder cho E02/E03; hiện chưa có page tương ứng. E00-04 §17 vẫn 
 chọn “bottom navigation hay menu drawer”; tạm dùng bottom navigation vì
 wireframe Homepage mobile vẽ rõ bottom bar — cần Product Owner xác nhận.
 
-## Database — Neon PostgreSQL và Prisma (E01-03, E01-04)
+## Database — Neon PostgreSQL và Prisma (E01-03 → E01-05)
 
 Database provider đã chốt cho dev/staging là **Neon PostgreSQL**. E01-03 thiết lập
 project, branch và biến môi trường kết nối; E01-04 khóa **Prisma ORM `7.10.1`**,
-tạo Prisma schema khung, generator `prisma-client` và baseline migration.
-Ứng dụng **chưa** có DB client/Prisma Client runtime — phần đó thuộc E01-05.
+tạo Prisma schema khung, generator `prisma-client` và baseline migration; E01-05
+thêm Prisma Client dùng chung, env validation server-side và health endpoint.
+Ứng dụng chưa có model nghiệp vụ.
 
 | Môi trường | Neon branch | Mục đích | Nơi lưu secret |
 | --- | --- | --- | --- |
@@ -154,14 +161,19 @@ hoặc ghép connection string bằng tay.
 
 | Biến | Nội dung | Ghi chú |
 | --- | --- | --- |
-| `DATABASE_URL` | Pooled connection string của branch tương ứng | Bắt buộc; dùng cho application runtime; dev và staging dùng giá trị khác nhau |
+| `DATABASE_URL` | Pooled connection string của branch tương ứng | Bắt buộc cho application runtime; dev và staging dùng giá trị khác nhau |
 | `DATABASE_URL_UNPOOLED` | Direct connection string của cùng branch | Bắt buộc cho Prisma CLI/migration; không dùng cho runtime traffic |
-| `SHADOW_DATABASE_URL` | Direct connection tới database shadow riêng | Tùy chọn, chỉ cần cho `prisma migrate dev`; chưa cấu hình trong E01-04 |
+| `SHADOW_DATABASE_URL` | Direct connection tới database shadow riêng | Tùy chọn, chỉ cần cho `prisma migrate dev`; chưa cấu hình |
+
+`src/lib/env.ts` validate `DATABASE_URL` khi server khởi tạo DB client lần đầu.
+`DATABASE_URL_UNPOOLED` và `SHADOW_DATABASE_URL` là tùy chọn ở runtime nhưng nếu
+có mặt thì cũng được kiểm tra định dạng. Validation chỉ báo tên biến và lý do
+tổng quát; không bao giờ in giá trị.
 
 Prisma ORM 7 **không còn hỗ trợ `directUrl`** trong schema/config. Prisma CLI dùng
 `datasource.url` trong `prisma7.config.ts`, vì vậy file này trỏ trực tiếp tới
-`DATABASE_URL_UNPOOLED`. Application runtime (E01-05) sẽ dùng adapter Neon với
-`DATABASE_URL` pooled. Không chạy migration qua connection có hậu tố `-pooler`.
+`DATABASE_URL_UNPOOLED`. Application runtime dùng adapter Neon với `DATABASE_URL`
+pooled. Không chạy migration qua connection có hậu tố `-pooler`.
 
 ### Thiết lập local
 
@@ -213,6 +225,115 @@ Quy tắc an toàn:
   sau khi clone hoặc sau mỗi lần đổi schema.
 - Không chạy migration trên `staging`/`production` trong E01-04.
 
+### DB client, env validation và health check (E01-05)
+
+#### DB client dùng chung
+
+- Vị trí: `src/lib/db.ts`.
+- Dùng `PrismaClient` của Prisma `7.10.1` với `PrismaNeon` adapter
+  (`@prisma/adapter-neon`) và **pooled** `DATABASE_URL`.
+- `neonConfig.webSocketConstructor = ws`: Neon serverless driver dùng
+  WebSocket. Node.js 22+ đã có `WebSocket` global; package `ws` giữ cho môi
+  trường Node.js 20 (mức tối thiểu của dự án) hoạt động.
+- Singleton: instance được cache trên `globalThis.nwhPrisma` và tái sử dụng.
+  Trong development, Next.js hot reload có thể nạp lại module; cache trên
+  `globalThis` tránh tạo thêm Prisma Client/connection pool mỗi lần reload.
+  Trong production, cùng cơ chế đảm bảo các server bundle dùng chung một client
+  thay vì mở pool riêng cho từng route.
+- Client chỉ được import ở server. `src/lib/db.ts` và `src/lib/env.ts` đều
+  `import "server-only"`; nếu Client Component import nhầm, build sẽ fail.
+- Không dùng `NEXT_PUBLIC_` cho bất kỳ biến database nào. `DATABASE_URL` chỉ
+  tồn tại trong process server.
+
+#### Environment validation
+
+- Vị trí: `src/lib/env.ts`.
+- `parseServerEnv()` là hàm thuần, có thể test độc lập; `getServerEnv()` validate
+  một lần cho mỗi process và cache kết quả.
+- Validation chạy lazy ở lần sử dụng DB đầu tiên, không chạy lúc `next build`.
+  Nhờ vậy build/CI không cần secret production, nhưng request đầu tiên sẽ fail
+  fast nếu cấu hình sai.
+- Kiểm tra URL hợp lệ, protocol `postgresql://` hoặc `postgres://`, có host và
+  database name.
+- Thông báo lỗi chỉ nêu **tên biến** và **lý do tổng quát**; không in giá trị
+  biến, connection string, username, hostname hay database name.
+
+| Biến | Bắt buộc | Phạm vi |
+| --- | --- | --- |
+| `DATABASE_URL` | Có, cho application runtime | Pooled connection string; dùng bởi DB client |
+| `DATABASE_URL_UNPOOLED` | Có, cho Prisma CLI/migration | Direct connection string; không dùng cho runtime traffic |
+| `SHADOW_DATABASE_URL` | Không | Chỉ cần cho `prisma migrate dev` |
+
+Ở runtime, `DATABASE_URL_UNPOOLED` và `SHADOW_DATABASE_URL` là tùy chọn; nếu có
+mặt thì vẫn được kiểm tra định dạng.
+
+#### Health endpoint
+
+`GET /api/health` là endpoint kỹ thuật, không thay thế authentication hoặc
+authorization. Endpoint chạy ở Node.js runtime, không nhận tham số và không cho
+phép thực thi truy vấn tùy ý. Nó thực hiện một truy vấn nhẹ `SELECT 1` qua
+Prisma Client.
+
+Healthy — HTTP `200`:
+
+```json
+{
+  "status": "ok",
+  "database": "connected"
+}
+```
+
+Unhealthy — HTTP `503`:
+
+```json
+{
+  "status": "error",
+  "database": "unavailable"
+}
+```
+
+Response luôn có `Cache-Control: no-store, max-age=0` và không chứa connection
+string, credentials, hostname, database name, environment value, stack trace
+hoặc raw Prisma error message.
+
+#### Kiểm tra local
+
+Với dev server đang chạy (`npm run dev`) hoặc bản production (`npm run build`,
+`npm run start`):
+
+```bash
+curl -i http://localhost:3000/api/health
+```
+
+Kỳ vọng: `HTTP/1.1 200 OK` và JSON healthy ở trên. Nếu DB không kết nối được,
+endpoint trả `503` với JSON unhealthy.
+
+Thử trường hợp DB unavailable mà **không sửa `.env.local`**: chạy một process
+server riêng với biến môi trường override chỉ trong process đó. Ví dụ
+PowerShell:
+
+```powershell
+$env:DATABASE_URL = "postgresql://user:password@127.0.0.1:1/invalid"
+npm run start -- -p 3101
+curl.exe -i http://localhost:3101/api/health
+Remove-Item Env:DATABASE_URL
+```
+
+Connection string trong ví dụ là giả và cố ý không kết nối được. Có thể thay
+bằng một giá trị sai định dạng để kiểm tra env validation; cả hai trường hợp
+phải trả `503` với JSON tối giản. Không dùng cách này để sửa hoặc ghi đè
+`.env.local`.
+
+#### Lưu ý bảo mật
+
+- Không commit `.env.local`, connection string hoặc bất kỳ secret nào.
+- Không đưa `DATABASE_URL` vào biến `NEXT_PUBLIC_`, Client Component, URL công
+  khai, log, screenshot hay issue/PR.
+- Không log toàn bộ Prisma error object; lỗi có thể chứa host, user hoặc
+  database name. Health endpoint chỉ trả trạng thái tổng quát.
+- Nếu nghi ngờ secret bị lộ, rotate credential trong Neon Console trước khi
+  dùng lại.
+
 ### Cấu hình staging
 
 - Cấu hình `DATABASE_URL` (pooled) và `DATABASE_URL_UNPOOLED` (direct) trong
@@ -227,10 +348,10 @@ Quy tắc an toàn:
 
 ### Phạm vi chưa bao gồm
 
-DB client ứng dụng, Prisma Client runtime, env validation và health endpoint
-thuộc **E01-05**. Model nghiệp vụ, authentication, catalog, rights, reader và
-community thuộc các epic sau. E01-04 chỉ thiết lập Prisma tooling và baseline
-migration; không thêm model nghiệp vụ.
+DB client, Prisma Client runtime, env validation và health endpoint đã được
+hoàn thiện ở **E01-05**. Model nghiệp vụ, authentication, catalog, rights, reader
+và community thuộc các epic sau. E01-04/E01-05 chỉ thiết lập Prisma tooling, DB
+client và health check; không thêm model nghiệp vụ.
 
 ## Bắt đầu đóng góp
 
@@ -275,6 +396,16 @@ npm run build
 
 `db:validate` và `db:generate` chạy offline (không cần kết nối database).
 `db:status` và `db:migrate:*` cần `DATABASE_URL_UNPOOLED` của Neon branch dev.
+
+Sau khi chạy dev server hoặc bản production đã build, kiểm tra health endpoint:
+
+```bash
+curl -i http://localhost:3000/api/health
+```
+
+Kỳ vọng `HTTP 200` với `{"status":"ok","database":"connected"}` khi DB hoạt động;
+`HTTP 503` với `{"status":"error","database":"unavailable"}` khi DB không kết nối
+được. Không có secret, hostname, database name hay stack trace trong response.
 
 Chạy bản production đã build:
 
